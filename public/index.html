@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Printing Service</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    input, select, textarea, button {
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>3D Print Request</h1>
+  <form id="printForm">
+    <label for="printType">Select Print Type:</label>
+    <select id="printType" name="printType" required>
+      <option value="upload">Upload Model</option>
+      <option value="text">Input Text</option>
+    </select>
+
+    <div id="modelUpload">
+      <label for="modelFile">Upload 3D Model (STL file):</label>
+      <input type="file" id="modelFile" name="modelFile" accept=".stl">
+    </div>
+
+    <div id="customText" style="display:none;">
+      <label for="textInput">Enter Text:</label>
+      <textarea id="textInput" name="textInput" placeholder="Describe your design" rows="4"></textarea>
+    </div>
+
+    <label for="filamentType">Select Filament Type:</label>
+    <select id="filamentType" name="filamentType" required>
+      <option value="PLA">PLA</option>
+      <option value="ABS">ABS</option>
+      <option value="PETG">PETG</option>
+    </select>
+
+    <label for="filamentColor">Select Filament Color:</label>
+    <select id="filamentColor" name="filamentColor" required>
+      <option value="Red">Red</option>
+      <option value="Blue">Blue</option>
+      <option value="Green">Green</option>
+    </select>
+
+    <label for="printSize">Select Print Size:</label>
+    <select id="printSize" name="printSize" required>
+      <option value="Small">Small</option>
+      <option value="Medium">Medium</option>
+      <option value="Large">Large</option>
+    </select>
+
+    <label for="timeEstimate">Estimated Print Time:</label>
+    <input type="text" id="timeEstimate" name="timeEstimate" readonly value="Calculate Time">
+
+    <button type="submit">Submit Request</button>
+  </form>
+
+  <script>
+    // Show/hide fields based on print type
+    document.getElementById('printType').addEventListener('change', function() {
+      const isUpload = this.value === 'upload';
+      document.getElementById('modelUpload').style.display = isUpload ? 'block' : 'none';
+      document.getElementById('customText').style.display = isUpload ? 'none' : 'block';
+    });
+
+    // Calculate estimated print time based on size and filament
+    document.getElementById('filamentType').addEventListener('change', updateTimeEstimate);
+    document.getElementById('printSize').addEventListener('change', updateTimeEstimate);
+
+    function updateTimeEstimate() {
+      const filamentType = document.getElementById('filamentType').value;
+      const printSize = document.getElementById('printSize').value;
+      const estimates = {
+        Small: { PLA: "1 hour", ABS: "1.5 hours", PETG: "2 hours" },
+        Medium: { PLA: "2 hours", ABS: "3 hours", PETG: "4 hours" },
+        Large: { PLA: "4 hours", ABS: "6 hours", PETG: "8 hours" }
+      };
+      document.getElementById('timeEstimate').value = estimates[printSize][filamentType] || 'Calculate Time';
+    }
+
+    // Form submission handler
+    document.getElementById('printForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+
+      const response = await fetch('/submit-form', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        alert('Request submitted successfully!');
+      } else {
+        alert('Failed to submit request. Try again.');
+      }
+    });
+  </script>
+</body>
+</html>
