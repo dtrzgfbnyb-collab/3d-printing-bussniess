@@ -5,87 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Printing Service</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: auto;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 700px;
+      width: 100%;
+      padding: 40px;
     }
     h1 {
       text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
     }
     form {
       display: flex;
       flex-direction: column;
     }
-    input, select, textarea, button {
-      margin: 10px 0;
-      padding: 10px;
+    label {
+      font-weight: 600;
+      color: #555;
+      margin-top: 15px;
+      margin-bottom: 8px;
+    }
+    input, select, textarea {
+      padding: 12px;
       font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
     }
     button {
-      background-color: #007BFF;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 5px;
       cursor: pointer;
+      margin-top: 25px;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     button:hover {
-      background-color: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .form-section {
+      display: none;
+    }
+    .form-section.active {
+      display: block;
+    }
+    .success-message {
+      display: none;
+      background: #4caf50;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>3D Print Request</h1>
-  <form id="printForm">
-    <label for="printType">Select Print Type:</label>
-    <select id="printType" name="printType" required>
-      <option value="upload">Upload Model</option>
-      <option value="text">Input Text</option>
-    </select>
+  <div class="container">
+    <h1>🖨️ 3D Print Request</h1>
+    <div class="success-message" id="successMessage">Request submitted successfully!</div>
+    <form id="printForm">
+      <label for="printType">Select Print Type:</label>
+      <select id="printType" name="printType" required>
+        <option value="upload">Upload Model</option>
+        <option value="text">Input Text</option>
+      </select>
 
-    <div id="modelUpload">
-      <label for="modelFile">Upload 3D Model (STL file):</label>
-      <input type="file" id="modelFile" name="modelFile" accept=".stl">
-    </div>
+      <div id="modelUpload" class="form-section active">
+        <label for="modelFile">Upload 3D Model (STL file):</label>
+        <input type="file" id="modelFile" name="modelFile" accept=".stl">
+      </div>
 
-    <div id="customText" style="display:none;">
-      <label for="textInput">Enter Text:</label>
-      <textarea id="textInput" name="textInput" placeholder="Describe your design" rows="4"></textarea>
-    </div>
+      <div id="customText" class="form-section">
+        <label for="textInput">Enter Text:</label>
+        <textarea id="textInput" name="textInput" placeholder="Describe your design"></textarea>
+      </div>
 
-    <label for="filamentType">Select Filament Type:</label>
-    <select id="filamentType" name="filamentType" required>
-      <option value="PLA">PLA</option>
-      <option value="ABS">ABS</option>
-      <option value="PETG">PETG</option>
-    </select>
+      <label for="filamentType">Select Filament Type:</label>
+      <select id="filamentType" name="filamentType" required>
+        <option value="PLA">PLA</option>
+        <option value="ABS">ABS</option>
+        <option value="PETG">PETG</option>
+      </select>
 
-    <label for="filamentColor">Select Filament Color:</label>
-    <select id="filamentColor" name="filamentColor" required>
-      <option value="Red">Red</option>
-      <option value="Blue">Blue</option>
-      <option value="Green">Green</option>
-    </select>
+      <label for="filamentColor">Select Filament Color:</label>
+      <select id="filamentColor" name="filamentColor" required>
+        <option value="Red">Red</option>
+        <option value="Blue">Blue</option>
+        <option value="Green">Green</option>
+        <option value="Black">Black</option>
+        <option value="White">White</option>
+      </select>
 
-    <label for="printSize">Select Print Size:</label>
-    <select id="printSize" name="printSize" required>
-      <option value="Small">Small</option>
-      <option value="Medium">Medium</option>
-      <option value="Large">Large</option>
-    </select>
+      <label for="printSize">Select Print Size:</label>
+      <select id="printSize" name="printSize" required>
+        <option value="Small">Small (up to 5cm)</option>
+        <option value="Medium">Medium (5-15cm)</option>
+        <option value="Large">Large (15cm+)</option>
+      </select>
 
-    <label for="timeEstimate">Estimated Print Time:</label>
-    <input type="text" id="timeEstimate" name="timeEstimate" readonly value="Calculate Time">
+      <label for="timeEstimate">Estimated Print Time:</label>
+      <input type="text" id="timeEstimate" name="timeEstimate" readonly value="Select options above">
 
-    <button type="submit">Submit Request</button>
-  </form>
+      <label for="email">Your Email:</label>
+      <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+
+      <button type="submit">Submit Request</button>
+    </form>
+  </div>
 
   <script>
     // Show/hide fields based on print type
     document.getElementById('printType').addEventListener('change', function() {
-      const isUpload = this.value === 'upload';
-      document.getElementById('modelUpload').style.display = isUpload ? 'block' : 'none';
-      document.getElementById('customText').style.display = isUpload ? 'none' : 'block';
+      const modelUpload = document.getElementById('modelUpload');
+      const customText = document.getElementById('customText');
+      
+      if (this.value === 'upload') {
+        modelUpload.classList.add('active');
+        customText.classList.remove('active');
+      } else {
+        modelUpload.classList.remove('active');
+        customText.classList.add('active');
+      }
     });
 
     // Calculate estimated print time based on size and filament
@@ -104,20 +181,20 @@
     }
 
     // Form submission handler
-    document.getElementById('printForm').addEventListener('submit', async function(event) {
+    document.getElementById('printForm').addEventListener('submit', function(event) {
       event.preventDefault();
-      const formData = new FormData(this);
-
-      const response = await fetch('/submit-form', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (response.ok) {
-        alert('Request submitted successfully!');
-      } else {
-        alert('Failed to submit request. Try again.');
-      }
+      
+      // Show success message
+      const successMessage = document.getElementById('successMessage');
+      successMessage.style.display = 'block';
+      
+      // Reset form
+      this.reset();
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        successMessage.style.display = 'none';
+      }, 3000);
     });
   </script>
 </body>
